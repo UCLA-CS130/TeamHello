@@ -14,6 +14,13 @@ using namespace boost;
 using namespace boost::system;
 using namespace boost::asio;
 
+// A struct to hold config arguments
+struct configArguments
+{
+   short unsigned int port;
+};
+
+
 /// The common handler for all incoming requests.
 
 class session
