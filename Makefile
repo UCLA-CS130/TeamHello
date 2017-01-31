@@ -12,8 +12,8 @@ reply_test:
 	g++ -std=c++11 -isystem ${GTEST_DIR}/include -pthread reply_test.cc reply.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o reply_test -lboost_system
 
 
-webserver: webserver.cc config_parser.h config_parser.cc request_handle.h reply.o request_handle.o
-	g++ webserver.cc config_parser.cc reply.o request_handle.o -I /usr/local/Cellar/boost/1.54.0/include -std=c++11 -lboost_system -o webserver
+webserver: webserver.h webserver.cc config_parser.h config_parser.cc request_handle.h reply.o request_handle.o
+	g++ webserver.h webserver.cc config_parser.cc reply.o request_handle.o -I /usr/local/Cellar/boost/1.54.0/include -std=c++11 -lboost_system -o webserver
 
 reply.o: reply.cc reply.h
 	g++ -c -std=c++11 reply.cc -lboost_system
