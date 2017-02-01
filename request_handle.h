@@ -7,7 +7,6 @@
 #include <iostream>
 #include <cstdlib>
 #include <utility>
-#include "request_handle.h"
 #include "reply.h"
 
 using namespace boost;
@@ -27,6 +26,8 @@ class session
 {
    asio::streambuf buff;
    http_headers headers;
+
+public:
    
    static void read_body(std::shared_ptr<session> pThis);
    
@@ -34,7 +35,9 @@ class session
    
    static void read_first_line(std::shared_ptr<session> pThis);
    
-public:
+   std::string read_first_line_text(std::istream & stream, std::string & line, std::string & ignore);
+
+   std::string read_next_line_text(std::istream & stream, std::string & line, std::string & ignore);
 
    char data[4096];
 
