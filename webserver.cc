@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include "config_parser.h"
 #include <utility>
+#include <algorithm>
 //#include "handlerBase.h"
 
 using namespace boost;
@@ -60,23 +61,64 @@ int Server::parseConfig(int argc, const char * argv[], configArguments& configAr
 
         if (config_parser.Parse(argv[1], &config_out)) 
         {
-            unsigned int tmpPort = std::stoi(config_out.statements_[0]->tokens_[1]);
-            if (tmpPort > 65535 || tmpPort < 0)
+            for (int i = 0; i < config_out.statements_.size(); i++)
             {
-                std::cerr << "The port number " << tmpPort << " in config file is invalid.\n";
-                return 2;
+                std::string header = config_out.statements_[i]->tokens_[0];
+                if (header == "port")
+                {
+                    if (config_out.statements_[i]->tokens_.size() > 1 && std::all_of(config_out.statements_[i]->tokens_[1].begin(), config_out.statements_[i]->tokens_[1].end(), ::isdigit))
+                    {
+                        unsigned int tmpPort = std::stoi(config_out.statements_[i]->tokens_[1]);
+                        if (tmpPort > 65535 || tmpPort < 0)
+                        {
+                            std::cerr << "The port number " << tmpPort << " in config file is invalid.\n";
+                            return 2;
+                        }
+                        configArgs.port = (short unsigned int)tmpPort;
+                    }
+                    else
+                    {
+                        std::cerr << "Please specify a port number.\n";
+                        return 3;
+                    }
+                }
+                else if (header == "base-path")
+                {
+                    if (config_out.statements_[i]->tokens_.size() > 1)
+                    {
+                        configArgs.baseDirectory = config_out.statements_[i]->tokens_[1];
+                    }
+                    else
+                    {
+                        std::cerr << "Please specify a base path.\n";
+                        return 3;
+                    }
+                }
+                else if (header == "path")
+                {
+                    if (config_out.statements_[i]->tokens_.size() > 2)
+                    {
+                        if (config_out.statements_[i]->tokens_[1] == "/echo")
+                        {
+	                        configArgs.echo_path = config_out.statements_[i]->tokens_[1];
+                        }
+                        else if (config_out.statements_[i]->tokens_[1] == "/static")
+                        {
+                            configArgs.static_path = config_out.statements_[i]->tokens_[1];
+                        }
+                        else
+                        {
+                            std::cerr << "Unrecognized server type: "+ config_out.statements_[i]->tokens_[1] +".\n";
+                            return 3;
+                        }
+                    }
+                    else
+                    {
+                        std::cerr << "Please specify a path.\n";
+                        return 3;
+                    }
+                }
             }
-            configArgs.port = (short unsigned int)tmpPort;
-
-	    std::string base_dir = config_out.statements_[1]->tokens_[1];
-	    configArgs.baseDirectory = base_dir;
-
-	    std::string echo_path = config_out.statements_[2]->tokens_[1];
-	    configArgs.echo_path = echo_path;
-
-	    std::string static_path = config_out.statements_[3]->tokens_[1];
-	    configArgs.static_path = static_path;
-	    
         }
         else 
         {

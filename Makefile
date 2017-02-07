@@ -4,7 +4,7 @@ CXXFLAGS= -g -Wall -pthread -std=c++11 $(CXXOPTIMIZE)
 GTEST_DIR=googletest/googletest
 SERVERCLASSES=config_parser.cc
 
-default:  config_parser config_parser_test reply.o reply_echo.o reply_static.o mime_types.o request_handle.o webserver webserver_test 
+default:  config_parser config_parser_test reply.o reply_echo.o reply_static.o mime_types.o request_handle.o webserver webserver_test request_handle_test reply_echo_test reply_static_test
 
 reply.o: reply.cc reply.h mime_types.h mime_types.cc
 	g++ -c -std=c++11 reply.cc -lboost_system
@@ -72,22 +72,18 @@ integration_test: clean default
 	./integration_test.sh
 	
 test_coverage:
-	g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -lboost_system
-	ar -rv libgtest.a gtest-all.o
-	g++ -std=c++11 -isystem ${GTEST_DIR}/include -pthread reply_test.cc reply.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o reply_test -lboost_system -fprofile-arcs -ftest-coverage
-	./reply_test; gcov -r reply.cc
 
 	g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -lboost_system
 	ar -rv libgtest.a gtest-all.o
-	g++ -std=c++11 -isystem ${GTEST_DIR}/include -pthread request_handle_test.cc reply.cc reply.h request_handle.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o request_handle_test -lboost_system -fprofile-arcs -ftest-coverage
+	g++ -std=c++11 -isystem ${GTEST_DIR}/include -pthread request_handle_test.cc reply.cc reply.h request_handle.cc mime_types.cc reply_static.cc reply_echo.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o request_handle_test -lboost_system -fprofile-arcs -ftest-coverage
 	./request_handle_test; gcov -r request_handle.cc
 	
 	g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -lboost_system
 	ar -rv libgtest.a gtest-all.o
-	g++ -std=c++11 -isystem ${GTEST_DIR}/include -pthread webserver_test.cc webserver.cc config_parser.cc reply.cc request_handle.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o webserver_test -lboost_system -fprofile-arcs -ftest-coverage
+	g++ -std=c++11 -isystem ${GTEST_DIR}/include -pthread webserver_test.cc webserver.cc config_parser.cc reply.cc request_handle.cc mime_types.cc reply_static.cc reply_echo.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o webserver_test -lboost_system -fprofile-arcs -ftest-coverage
 	./webserver_test; gcov -r webserver.cc
-
-	g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -lboost_system
+  
+  g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -lboost_system
 	ar -rv libgtest.a gtest-all.o
 	g++ -std=c++11 -isystem ${GTEST_DIR}/include -pthread webserver_test.cc webserver.cc config_parser.cc reply.cc request_handle.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o webserver_test -lboost_system -fprofile-arcs -ftest-coverage
 	./reply_echo_test; gcov -r reply_echo.cc
@@ -95,4 +91,6 @@ test_coverage:
 	g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -lboost_system
 	ar -rv libgtest.a gtest-all.o
 	g++ -std=c++11 -isystem ${GTEST_DIR}/include -pthread webserver_test.cc webserver.cc config_parser.cc reply.cc request_handle.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o webserver_test -lboost_system -fprofile-arcs -ftest-coverage
+
 	./reply_static_test; gcov -r reply_static.cc
+
