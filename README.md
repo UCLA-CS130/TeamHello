@@ -45,3 +45,6 @@ make test_coverage
     -Refactored such functions to test data that async functions would 
      have worked with 
 
+# To test with /static/file_name
+
+whenever /static/file_name is tested, we need to edit base-path to be the path on your personal computer where we serve the file from
