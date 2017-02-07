@@ -1,4 +1,4 @@
 port 8080;
-base-path /home/bob;
+base-path /home/evelyn/cs130/TeamHello/picture;
 path /echo reply_echo;
 path /static reply_static;
